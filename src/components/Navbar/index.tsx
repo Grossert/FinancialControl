@@ -14,7 +14,6 @@ export default function Navbar() {
         <div className="text-white text-2xl font-bold">
           <Link href="/">FinancialControl</Link>
         </div>
-git
         <div className="lg:hidden">
           <button
             onClick={toggleMobileMenu}
