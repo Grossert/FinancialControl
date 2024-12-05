@@ -9,7 +9,7 @@ export interface Movimentacao {
 }
 
 export async function cadastrar(movimentacao: Movimentacao) {
-    try {
+    try { 
       const movimentacoesRef = collection(firestore, 'movimentacoes');
       let dataFormatada: Timestamp;
   

@@ -1,13 +1,72 @@
+"use client"
+
+import React, { useEffect, useState } from "react";
+import { getMovimentacoes } from "@/service/movimentacaoServices"; // Função para buscar as movimentações
+
 export default function Home() {
-  // Dados simulados
-  const resumo = {
-    receitas: 8500,
-    despesas: 5200,
-    despesasFixas: 7,
-    despesasVariaveis: 12,
-    maiorDespesa: 1500, // Valor da maior despesa
-    economia: 3300, // Economia calculada
-  };
+  const [resumo, setResumo] = useState({
+    receitas: 0,
+    despesas: 0,
+    despesasFixas: 0,
+    despesasVariaveis: 0,
+    maiorDespesa: 0,
+    economia: 0,
+    qtdDespesasFixas: 0, // Quantidade de despesas fixas
+    qtdDespesasVariaveis: 0, // Quantidade de despesas variáveis
+  });
+
+  useEffect(() => {
+    const fetchDados = async () => {
+      try {
+        // Buscar todas as movimentações
+        const movimentacoes = await getMovimentacoes();
+
+        // Calcular o total de receitas e despesas
+        const receitas = movimentacoes
+          .filter((mov) => mov.tipo === "receita")
+          .reduce((acc, mov) => acc + mov.valor, 0);
+        const despesas = movimentacoes
+          .filter((mov) => mov.tipo === "despesa")
+          .reduce((acc, mov) => acc + mov.valor, 0);
+
+        // Calcular as despesas fixas e variáveis
+        const despesasFixas = movimentacoes
+          .filter((mov) => mov.tipo === "fixa") // Filtro para despesas fixas
+          .reduce((acc, mov) => acc + mov.valor, 0);
+        const despesasVariaveis = movimentacoes
+          .filter((mov) => mov.tipo === "variavel") // Filtro para despesas variáveis
+          .reduce((acc, mov) => acc + mov.valor, 0);
+
+        // Calcular a quantidade de despesas fixas e variáveis
+        const qtdDespesasFixas = movimentacoes.filter((mov) => mov.tipo === "fixa").length;
+        const qtdDespesasVariaveis = movimentacoes.filter((mov) => mov.tipo === "variavel").length;
+
+        // Maior despesa
+        const maiorDespesa = movimentacoes
+          .filter((mov) => mov.tipo === "despesa")
+          .reduce((max, mov) => (mov.valor > max ? mov.valor : max), 0);
+
+        // Economia
+        const economia = receitas - despesas;
+
+        // Atualizar o estado com os cálculos
+        setResumo({
+          receitas,
+          despesas,
+          despesasFixas,
+          despesasVariaveis,
+          maiorDespesa,
+          economia,
+          qtdDespesasFixas, // Atualizando a quantidade de despesas fixas
+          qtdDespesasVariaveis, // Atualizando a quantidade de despesas variáveis
+        });
+      } catch (error) {
+        console.error("Erro ao buscar movimentações:", error);
+      }
+    };
+
+    fetchDados();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white text-gray-800 p-6 sm:p-12 font-sans">
@@ -44,18 +103,18 @@ export default function Home() {
         <div className="p-6 bg-white rounded-lg shadow-lg">
           <h2 className="text-lg font-semibold text-gray-700">Despesas Fixas</h2>
           <p className="mt-4 text-4xl font-bold text-blue-500 text-center">
-            {resumo.despesasFixas}
+            {resumo.qtdDespesasFixas} Despesas
           </p>
-          <p className="text-center text-gray-600">despesas fixas no mês</p>
+          <p className="text-center text-gray-600">quantidade de despesas fixas</p>
         </div>
 
         {/* Estatísticas de Despesas Variáveis */}
         <div className="p-6 bg-white rounded-lg shadow-lg">
           <h2 className="text-lg font-semibold text-gray-700">Despesas Variáveis</h2>
           <p className="mt-4 text-4xl font-bold text-purple-500 text-center">
-            {resumo.despesasVariaveis}
+            {resumo.qtdDespesasVariaveis} Despesas
           </p>
-          <p className="text-center text-gray-600">despesas variáveis no mês</p>
+          <p className="text-center text-gray-600">quantidade de despesas variáveis</p>
         </div>
 
         {/* Economia do Mês */}
@@ -74,15 +133,6 @@ export default function Home() {
             R$ {resumo.maiorDespesa.toFixed(2)}
           </p>
           <p className="text-center text-gray-600">registrada no mês</p>
-        </div>
-
-        {/* Total de Movimentações */}
-        <div className="p-6 bg-white rounded-lg shadow-lg">
-          <h2 className="text-lg font-semibold text-gray-700">Movimentações</h2>
-          <p className="mt-4 text-4xl font-bold text-gray-700 text-center">
-            {resumo.despesasFixas + resumo.despesasVariaveis}
-          </p>
-          <p className="text-center text-gray-600">movimentações totais</p>
         </div>
       </main>
 
