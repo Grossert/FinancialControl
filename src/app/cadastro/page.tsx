@@ -1,7 +1,7 @@
-
 'use client';
 
 import { useState } from "react";
+import { cadastrar } from "@/service/movimentacaoServices"
 
 export default function Cadastro() {
   // Estados do formulário
@@ -15,8 +15,10 @@ export default function Cadastro() {
   const [situacao, setSituacao] = useState<string>("pago"); // Para situação de despesa
 
   // Função de envio do formulário
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Estrutura dos dados que será enviada para o Firebase
     const movimentacao = {
       tipo,
       caracteristica,
@@ -27,7 +29,23 @@ export default function Cadastro() {
       data,
       situacao,
     };
-    console.log("Movimentação Cadastrada:", movimentacao);
+
+    try {
+      const id = await cadastrar(movimentacao);
+      console.log("Movimentação cadastrada com sucesso:", id);
+      
+      setTipo("receita");
+      setCaracteristica("variavel");
+      setIsFixa(false);
+      setMeses(1);
+      setDescricao("");
+      setValor(0);
+      setData("");
+      setSituacao("pago");
+
+    } catch (error) {
+      console.error("Erro ao cadastrar movimentação:", error);
+    }
   };
 
   return (
@@ -138,4 +156,4 @@ export default function Cadastro() {
       </div>
     </form>
   );
-};
+}
