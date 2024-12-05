@@ -18,30 +18,23 @@ export default function Home() {
   useEffect(() => {
     const fetchDados = async () => {
       try {
-        // Buscar todas as movimentações
         const movimentacoes = await getMovimentacoes();
-
-        // Calcular o total de receitas e despesas
         const receitas = movimentacoes
           .filter((mov) => mov.tipo === "receita")
           .reduce((acc, mov) => acc + mov.valor, 0);
         const despesas = movimentacoes
           .filter((mov) => mov.tipo === "despesa")
           .reduce((acc, mov) => acc + mov.valor, 0);
-
-        // Calcular as despesas fixas e variáveis
         const despesasFixas = movimentacoes
-          .filter((mov) => mov.tipo === "fixa") // Filtro para despesas fixas
+          .filter((mov) => mov.tipo === "fixa") 
           .reduce((acc, mov) => acc + mov.valor, 0);
         const despesasVariaveis = movimentacoes
-          .filter((mov) => mov.tipo === "variavel") // Filtro para despesas variáveis
+          .filter((mov) => mov.tipo === "variavel")
           .reduce((acc, mov) => acc + mov.valor, 0);
 
-        // Calcular a quantidade de despesas fixas e variáveis
         const qtdDespesasFixas = movimentacoes.filter((mov) => mov.tipo === "fixa").length;
         const qtdDespesasVariaveis = movimentacoes.filter((mov) => mov.tipo === "variavel").length;
 
-        // Maior despesa
         const maiorDespesa = movimentacoes
           .filter((mov) => mov.tipo === "despesa")
           .reduce((max, mov) => (mov.valor > max ? mov.valor : max), 0);
@@ -90,31 +83,7 @@ export default function Home() {
               <span>Total de Despesas:</span>
               <span className="text-red-600 font-bold">R$ {resumo.despesas.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span>Saldo Final:</span>
-              <span className="text-blue-600 font-bold">
-                R$ {(resumo.receitas - resumo.despesas).toFixed(2)}
-              </span>
-            </div>
           </div>
-        </div>
-
-        {/* Estatísticas de Despesas Fixas */}
-        <div className="p-6 bg-white rounded-lg shadow-lg">
-          <h2 className="text-lg font-semibold text-gray-700">Despesas Fixas</h2>
-          <p className="mt-4 text-4xl font-bold text-blue-500 text-center">
-            {resumo.qtdDespesasFixas} Despesas
-          </p>
-          <p className="text-center text-gray-600">quantidade de despesas fixas</p>
-        </div>
-
-        {/* Estatísticas de Despesas Variáveis */}
-        <div className="p-6 bg-white rounded-lg shadow-lg">
-          <h2 className="text-lg font-semibold text-gray-700">Despesas Variáveis</h2>
-          <p className="mt-4 text-4xl font-bold text-purple-500 text-center">
-            {resumo.qtdDespesasVariaveis} Despesas
-          </p>
-          <p className="text-center text-gray-600">quantidade de despesas variáveis</p>
         </div>
 
         {/* Economia do Mês */}

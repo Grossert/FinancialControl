@@ -2,12 +2,14 @@ import { collection, addDoc, getDocs, deleteDoc, updateDoc, doc, Timestamp } fro
 import { firestore } from '@/lib/firebaseconfig'
 
 export interface Movimentacao {
-    id: string;
-    descricao: string;
-    valor: number;
-    data: any;
-    tipo: string;
-  }
+  id: string;
+  descricao: string;
+  valor: number;
+  data: any;
+  tipo: string;
+  situacao: string; 
+  caracteristica: string;
+}
 
 export async function cadastrar(movimentacao: Movimentacao) {
     try { 
@@ -34,24 +36,27 @@ export async function cadastrar(movimentacao: Movimentacao) {
     }
   }
 
-export async function getMovimentacoes(): Promise<Movimentacao[]> {
+  export async function getMovimentacoes(): Promise<Movimentacao[]> {
     try {
       const movimentacoesRef = collection(firestore, 'movimentacoes');
       const snapshot = await getDocs(movimentacoesRef);
-      
+  
       const movimentacoes: Movimentacao[] = snapshot.docs.map((doc) => {
         const data = doc.data() as Omit<Movimentacao, 'id'>; // Excluindo 'id' do tipo aqui
+        
+        // Verifica se o campo 'data' é um Timestamp e formata a data corretamente
         const dataFormatada = data.data instanceof Timestamp
           ? data.data.toDate().toLocaleDateString()
           : data.data;
-          
+  
+        // Retorna o objeto com todos os dados necessários
         return {
           ...data,
           id: doc.id, // Atribuindo o id do documento
-          data: dataFormatada
+          data: dataFormatada, // Formatação da data
         };
       });
-      
+  
       console.log('Movimentações recuperadas com sucesso:', movimentacoes);
       return movimentacoes;
     } catch (error) {
@@ -59,19 +64,22 @@ export async function getMovimentacoes(): Promise<Movimentacao[]> {
       throw new Error('Erro ao recuperar movimentações');
     }
   }
-  
-  
 
   export async function editarMovimentacao(id: string, movimentacao: Movimentacao) {
     try {
       const movimentacaoRef = doc(firestore, 'movimentacoes', id);
+  
       let dataFormatada: Timestamp;
       if (movimentacao.data instanceof Timestamp) {
         dataFormatada = movimentacao.data;
       } else {
-        dataFormatada = Timestamp.fromDate(new Date(movimentacao.data));
+        const dataConvertida = new Date(movimentacao.data);
+        if (isNaN(dataConvertida.getTime())) {
+          throw new Error("Data inválida fornecida");
+        }
+        dataFormatada = Timestamp.fromDate(dataConvertida);
       }
-
+  
       await updateDoc(movimentacaoRef, {
         descricao: movimentacao.descricao,
         valor: movimentacao.valor,

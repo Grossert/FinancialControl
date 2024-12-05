@@ -14,7 +14,9 @@ export default function Movimentacao() {
     descricao: '',
     valor: 0,
     data: '',
-    tipo: ''
+    tipo: '',
+    situacao: '', // Nova propriedade
+    caracteristica: '', // Nova propriedade
   }); // Dados do formulário para editar
 
   useEffect(() => {
@@ -39,7 +41,9 @@ export default function Movimentacao() {
       descricao: movimentacao.descricao,
       valor: movimentacao.valor,
       data: movimentacao.data,
-      tipo: movimentacao.tipo
+      tipo: movimentacao.tipo,
+      situacao: movimentacao.situacao, // Incluindo situação no formulário
+      caracteristica: movimentacao.caracteristica, // Incluindo característica no formulário
     });
     setIsEditing(true);
   };
@@ -87,6 +91,8 @@ export default function Movimentacao() {
               <p><strong>Valor:</strong> R$ {mov.valor}</p>
               <p><strong>Data:</strong> {mov.data}</p>
               <p><strong>Tipo:</strong> {mov.tipo}</p>
+              <p><strong>Situação:</strong> {mov.situacao}</p> {/* Exibindo a Situação */}
+              <p><strong>Característica:</strong> {mov.caracteristica}</p> {/* Exibindo a Característica */}
 
               <div className="mt-2">
                 <button
@@ -145,6 +151,24 @@ export default function Movimentacao() {
                   className="w-full p-2 border border-gray-300 rounded mt-1"
                   value={formData.tipo}
                   onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium">Situação</label>
+                <input
+                  type="text"
+                  className="w-full p-2 border border-gray-300 rounded mt-1"
+                  value={formData.situacao}
+                  onChange={(e) => setFormData({ ...formData, situacao: e.target.value })}
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium">Característica</label>
+                <input
+                  type="text"
+                  className="w-full p-2 border border-gray-300 rounded mt-1"
+                  value={formData.caracteristica}
+                  onChange={(e) => setFormData({ ...formData, caracteristica: e.target.value })}
                 />
               </div>
               <div className="flex justify-between">
