@@ -67,19 +67,52 @@ export async function getMovimentacoes(): Promise<Movimentacao[]> {
   }
 }
 
+// Função para editar uma movimentação
+export async function editarMovimentacao(id: string, movimentacao: Partial<Movimentacao>): Promise<void> {
+  try {
+    const docRef = doc(firestore, 'movimentacoes', id);
+    await updateDoc(docRef, movimentacao);
+    console.log('Movimentação editada com sucesso:', id);
+  } catch (error) {
+    console.error('Erro ao editar movimentação:', error);
+    throw new Error('Erro ao editar movimentação');
+  }
+}
+
+// Função para deletar uma movimentação
+export async function deletarMovimentacao(id: string): Promise<void> {
+  try {
+    const docRef = doc(firestore, 'movimentacoes', id);
+    await deleteDoc(docRef);
+    console.log('Movimentação deletada com sucesso:', id);
+  } catch (error) {
+    console.error('Erro ao deletar movimentação:', error);
+    throw new Error('Erro ao deletar movimentação');
+  }
+}
+
 // Função para gerar relatório PDF
 export const gerarRelatorioPDF = (movimentacoes: Movimentacao[]) => {
   import('jspdf').then(({ jsPDF }) => {
     const doc = new jsPDF();
 
-    doc.text("Relatório de Movimentações", 10, 10);
-    
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text('Relatório de Movimentações', 10, 10);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(12);
+
     movimentacoes.forEach((mov, index) => {
-      doc.text(`Descrição: ${mov.descricao}`, 10, 20 + index * 10);
-      doc.text(`Valor: ${mov.valor}`, 10, 30 + index * 10);
-      doc.text(`Data: ${mov.data}`, 10, 40 + index * 10);
+      const y = 20 + index * 10;
+      doc.text(`Descrição: ${mov.descricao}`, 10, y);
+      doc.text(`Valor: R$ ${mov.valor.toFixed(2)}`, 10, y + 5);
+      doc.text(`Data: ${mov.data}`, 10, y + 10);
+      doc.text(`Tipo: ${mov.tipo}`, 100, y);
+      doc.text(`Situação: ${mov.situacao}`, 100, y + 5);
+      doc.text(`Característica: ${mov.caracteristica}`, 100, y + 10);
     });
 
-    doc.save("relatorio_movimentacoes.pdf");
+    doc.save('relatorio_movimentacoes.pdf');
   });
 };
