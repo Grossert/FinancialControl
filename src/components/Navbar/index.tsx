@@ -1,11 +1,21 @@
-import { useState } from 'react';
 import Link from 'next/link';
+import { useState } from 'react';
+// Contexts
+import { useUser } from '@/contexts/authUser';
+// Hooks
+import { logout } from '@/hooks/auth';
 
 export default function Navbar() {
+  const { user, setUser } = useUser();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleLogout = () => {
+    logout(); // Call the logout function
+    setUser(null); // Reset the user context after logging out
   };
 
   return (
@@ -34,20 +44,43 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Links da barra de navegação */}
         <div className="hidden lg:flex space-x-6">
-          <Link href="/" className="text-white hover:text-gray-300">
-            Início
-          </Link>
-          <Link href="/cadastro" className="text-white hover:text-gray-300">
-            Cadastro
-          </Link>
-          <Link href="/movimentacao" className="text-white hover:text-gray-300">
-            Movimentação
-          </Link>
-          <Link href="/relatorio" className="text-white hover:text-gray-300">
-            Relatórios
-          </Link>
+
+          {user && (
+            <>
+              <Link href="/" className="text-white hover:text-gray-300">
+                Início
+              </Link>
+              <Link href="/cadastro" className="text-white hover:text-gray-300">
+                Cadastro
+              </Link>
+              <Link href="/movimentacao" className="text-white hover:text-gray-300">
+                Movimentação
+              </Link>
+              <Link href="/relatorio" className="text-white hover:text-gray-300">
+                Relatórios
+              </Link>
+              <Link href="/perfil" className="text-white hover:text-gray-300">
+                Perfil
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="text-white hover:text-gray-300">
+                Logout
+              </button>
+            </>
+          )}
+
+          {!user && (
+            <>
+              <Link href="/login" className="text-white hover:text-gray-300">
+                Login
+              </Link>
+              <Link href="/register" className="text-white hover:text-gray-300">
+                Cadastrar Usuário
+              </Link>
+            </>
+          )}
         </div>
       </div>
 
@@ -58,8 +91,7 @@ export default function Navbar() {
           </Link>
           <Link
             href="/cadastro"
-            className="block text-white py-2 hover:text-gray-300"
-          >
+            className="block text-white py-2 hover:text-gray-300">
             Cadastro de Movimentação
           </Link>
           <Link href="/ver" className="block text-white py-2 hover:text-gray-300">
@@ -67,12 +99,46 @@ export default function Navbar() {
           </Link>
           <Link
             href="/relatorios"
-            className="block text-white py-2 hover:text-gray-300"
-          >
+            className="block text-white py-2 hover:text-gray-300">
             Relatórios
           </Link>
+          <Link
+            href="/perfil"
+            className="block text-white py-2 hover:text-gray-300">
+            Perfil
+          </Link>
+          <button
+                onClick={handleLogout}
+                className="text-white hover:text-gray-300">
+                Logout
+              </button>
+
+          {/* Conditionally render mobile login or logout */}
+          {!user ? (
+            <>
+              <Link
+                href="/login"
+                className="block text-white py-2 hover:text-gray-300"
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
+                className="block text-white py-2 hover:text-gray-300"
+              >
+                Cadastrar Usuario
+              </Link>
+            </>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className="block text-white py-2 hover:text-gray-300"
+            >
+              Logout
+            </button>
+          )}
         </div>
       )}
     </nav>
   );
-};
+}

@@ -1,19 +1,19 @@
-'use client';
+'use client'
 
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+import UserProvider from "@/contexts/authUser";
+//Components
+import Nav from "@/components/Navbar";
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
   return (
-    <html lang="en">
-      <body>
-        <Navbar></Navbar>
-        {children}
-      </body>
+    <html>
+      <UserProvider>
+        <body>
+          <Nav />
+          {children}
+        </body>
+      </UserProvider>
     </html>
   );
 }
